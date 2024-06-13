@@ -1,16 +1,20 @@
 import React from 'react';
 // import logo from './logo.svg';
 import './App.css';
-import { useFeatureIsOn } from "@growthbook/growthbook-react";
+
 import Cookies from 'js-cookie';
 
-import { GrowthBook , GrowthBookProvider } from "@growthbook/growthbook-react";
+import { GrowthBook, GrowthBookProvider , useFeatureIsOn } from "@growthbook/growthbook-react";
 
+console.log("cookie" , Cookies.get('cn-debug'))
 const growthbook = new GrowthBook({
   apiHost: "https://growthbook-proxy-platform-intel.gp-nonprod-na-0.conde.digital",
   clientKey: "sdk-JMxlG3FbcBwYE0MN",
   enableDevMode: Cookies.get('cn-debug') === "true",
-  subscribeToChanges: true,
+  // subscribeToChanges: true,
+  attributes: {
+          id: '4543',
+  },
   trackingCallback: (experiment, result) => {
     console.log({experiment})
     // TODO: Use your real analytics tracking system
@@ -20,6 +24,13 @@ const growthbook = new GrowthBook({
     });
   }
 });
+
+growthbook.init({
+  // Optional, enable streaming updates
+  streaming: true
+})
+
+console.log('grothboo' , growthbook)
 
 function getRuleId(experimentsData: any , gbAssignment: any ,experimentId: string) {
 
@@ -42,7 +53,6 @@ function getRuleId(experimentsData: any , gbAssignment: any ,experimentId: strin
 
 
 function App() {
-  const enabled = useFeatureIsOn("test-feature");
 
   React.useEffect(() => {
 
@@ -51,27 +61,27 @@ function App() {
 
     async function load(){
      
-      const stagGrowthbook = new GrowthBook({
-        apiHost: "https://growthbook-proxy-platform-intel.gp-nonprod-na-0.conde.digital",
-        clientKey: "sdk-JMxlG3FbcBwYE0MN",
-        enableDevMode: true,
-        subscribeToChanges: true,
-        attributes: {
-          id: '4543',
-        }
-      });
+      // const stagGrowthbook = new GrowthBook({
+      //   apiHost: "https://growthbook-proxy-platform-intel.gp-nonprod-na-0.conde.digital",
+      //   clientKey: "sdk-JMxlG3FbcBwYE0MN",
+      //   enableDevMode: true,
+      //   subscribeToChanges: true,
+      //   attributes: {
+      //     id: '4543',
+      //   }
+      // });
 
-      console.log({stagGrowthbook})
+      // console.log({stagGrowthbook})
   
-      await stagGrowthbook.loadFeatures();
+      // await stagGrowthbook.init();
      
-      const t = await stagGrowthbook.getFeatures();
+      // const t = await stagGrowthbook.getFeatures();
 
-      console.log({t})
+      // console.log({t})
 
-      const a = stagGrowthbook.getFeatureValue("glamour_addensity_commerce_payload_test" , {});
+      // const a = stagGrowthbook.getFeatureValue("glamour_addensity_commerce_payload_test" , {});
 
-        console.log({a})
+      //   console.log({a})
       
       // Load features asynchronously when the app renders
      
@@ -85,15 +95,16 @@ function App() {
 
   return (
     <div className="App">
-      <GrowthBookProvider growthbook={growthbook}>
-      <MyComponent />
-      </GrowthBookProvider>
+        <GrowthBookProvider growthbook={growthbook}>
+          <MyComponent />
+        </GrowthBookProvider>
     </div>
   );
 }
 
 function MyComponent() {
-  const enabled = useFeatureIsOn("test-feature");
+  const enabled = true;
+  // const enabled = useFeatureIsOn("test-feature");
   
   if (enabled) {
     return <div>On!</div>
